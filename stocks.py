@@ -1,29 +1,31 @@
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+file_path = "Lab Session1 Data.xlsx"
+df = pd.read_excel(file_path, sheet_name="IRCTC Stock Price")
+df.head()
 
-data = pd.read_excel(r"C:\Users\heman\OneDrive\Documents\Sem 4\ML\Lab\3\Lab_Session1_Data.xlsx", sheet_name="Purchase_Data")
 
-try:
-    data["Date"] = pd.to_datetime(data["Date"], format="%m/%d/%Y")
-except ValueError:
-    # If formatting cannot be determined, raise an informative error
-    raise ValueError("Unable to interpret the 'Date' column format. Please provide the correct format or convert it before reading.")
+# Calculating mean and variance of Price
+price_mean = df["Price"].mean()
+price_variance = df["Price"].var()
 
-# Extract relevant columns and create matrices
-price_matrix = data[["Price", "Open", "High", "Low"]].to_numpy()
-cost_vector = data["Cost"].to_numpy()
+print("Mean of Price:", price_mean)
+print("Variance of Price:", price_variance)
 
-if price_matrix.shape[1] != cost_vector.shape[0]:
-    raise ValueError("Number of features in price_matrix does not match number of elements in cost_vector.")
+# Select Wednesday prices and calculating sample mean
+wednesday_mean=df[df['Day']=='Wed']['Price'].mean()
 
-# Calculate pseudo-inverse and product
-pseudoinverse = np.linalg.pinv(price_matrix)
-estimated_costs = np.dot(pseudoinverse, cost_vector)
+print("Sample mean of Wednesday prices:", wednesday_mean)
+print("Comparison with population mean:", wednesday_mean - price_mean)
 
-# Handle potential singularity warnings from pinv
-if np.linalg.cond(price_matrix) > 1 / np.finfo(float).eps:
-    print("Warning: The price matrix is nearly singular, so the pseudo-inverse is not well-conditioned. The estimated costs may be inaccurate.")
+# Select April prices and calculating sample mean
+april_prices = df[df['Month']=='Apr']["Price"]
+april_mean = april_prices.mean()
 
-# Display estimated costs
-for i, product in enumerate(data["Product"].unique()):
-    print(f"Estimated cost for product {product}: {estimated_costs[i]}")
+print("Sample mean of April prices:", april_mean)
+print("Comparison with population mean:", april_mean - price_mean)
+
+# Probability of loss
+loss_probability = len(df[df["Chg%"] < 0]) / len(df)
+print("Probability of making a loss:", loss_probability)
