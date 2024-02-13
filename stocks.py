@@ -1,7 +1,7 @@
 
 import numpy as np
 import pandas as pd
-file_path = "Lab Session1 Data.xlsx"
+file_path = "Lab_Session1_Data.xlsx"
 df = pd.read_excel(file_path, sheet_name="IRCTC Stock Price")
 df.head()
 
